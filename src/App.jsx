@@ -5,13 +5,6 @@ import Sidebar from "./components/Sidebar";
 import FileUploader from "./components/FileUploader";
 import ChatInterface from "./components/ChatInterface";
 import UserAvatar from "./components/UserAvatar";
-
-import { motion } from "framer-motion";
-import Header from "./components/Header";
-import Sidebar from "./components/Sidebar";
-import FileUploader from "./components/FileUploader";
-import ChatInterface from "./components/ChatInterface";
-import UserAvatar from "./components/UserAvatar";
 import { FileProvider } from "./context/FileContext";
 import { ChatProvider } from "./context/ChatContext";
 
