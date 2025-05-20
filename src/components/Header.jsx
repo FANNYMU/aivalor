@@ -1,18 +1,17 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FiPlusSquare, FiMenu } from 'react-icons/fi';
-import { useFile } from '../context/FileContext';
+import { motion } from "framer-motion";
+import { useFile } from "../context/FileContext";
+import { FiPlusSquare } from "react-icons/fi";
 
 export default function Header({ onToggleSidebar }) {
   const { clearFile } = useFile();
-  
+
   const handleNewFile = () => {
     clearFile();
   };
 
   return (
     <header className="glass-effect p-4 flex items-center justify-between">
-      <motion.button
+      {/* <motion.button
         className="text-gray-300 hover:text-white"
         onClick={onToggleSidebar}
         whileHover={{ scale: 1.1 }}
@@ -20,7 +19,7 @@ export default function Header({ onToggleSidebar }) {
         aria-label="Toggle sidebar"
       >
         <FiMenu size={24} />
-      </motion.button>
+      </motion.button> */}
 
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -41,4 +40,4 @@ export default function Header({ onToggleSidebar }) {
       </motion.button>
     </header>
   );
-} 
+}

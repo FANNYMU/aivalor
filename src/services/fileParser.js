@@ -1,9 +1,12 @@
-import * as pdfjs from 'pdfjs-dist';
-import mammoth from 'mammoth';
-import { read, utils } from 'xlsx';
+import * as pdfjs from "pdfjs-dist";
+import mammoth from "mammoth";
+import { read, utils } from "xlsx";
 
 // Konfigurasi worker untuk PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.js",
+  import.meta.url
+).toString();
 
 /**
  * Mengekstrak teks dari file PDF
@@ -13,20 +16,23 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export async function extractTextFromPdf(file) {
   try {
     const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
-    let text = '';
+    const pdf = await pdfjs.getDocument({
+      data: arrayBuffer,
+    }).promise;
+
+    let text = "";
 
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-      const pageText = content.items.map(item => item.str).join(' ');
-      text += pageText + '\n';
+      const pageText = content.items.map((item) => item.str).join(" ");
+      text += pageText + "\n";
     }
 
     return text;
   } catch (error) {
-    console.error('Error saat mengekstrak teks dari PDF:', error);
-    throw new Error('Gagal mengekstrak teks dari file PDF.');
+    console.error("Error saat mengekstrak teks dari PDF:", error);
+    throw new Error(`Gagal mengekstrak teks dari file PDF: ${error.message}`);
   }
 }
 
@@ -41,8 +47,8 @@ export async function extractTextFromDocx(file) {
     const result = await mammoth.extractRawText({ arrayBuffer });
     return result.value;
   } catch (error) {
-    console.error('Error saat mengekstrak teks dari DOCX:', error);
-    throw new Error('Gagal mengekstrak teks dari file DOCX.');
+    console.error("Error saat mengekstrak teks dari DOCX:", error);
+    throw new Error("Gagal mengekstrak teks dari file DOCX.");
   }
 }
 
@@ -56,8 +62,8 @@ export async function extractTextFromTxt(file) {
     const text = await file.text();
     return text;
   } catch (error) {
-    console.error('Error saat mengekstrak teks dari TXT:', error);
-    throw new Error('Gagal mengekstrak teks dari file TXT.');
+    console.error("Error saat mengekstrak teks dari TXT:", error);
+    throw new Error("Gagal mengekstrak teks dari file TXT.");
   }
 }
 
@@ -70,18 +76,18 @@ export async function extractTextFromExcel(file) {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const workbook = read(arrayBuffer);
-    
-    let text = '';
-    workbook.SheetNames.forEach(sheetName => {
+
+    let text = "";
+    workbook.SheetNames.forEach((sheetName) => {
       const worksheet = workbook.Sheets[sheetName];
       text += `Sheet: ${sheetName}\n`;
-      text += utils.sheet_to_csv(worksheet) + '\n\n';
+      text += utils.sheet_to_csv(worksheet) + "\n\n";
     });
-    
+
     return text;
   } catch (error) {
-    console.error('Error saat mengekstrak teks dari Excel:', error);
-    throw new Error('Gagal mengekstrak teks dari file Excel.');
+    console.error("Error saat mengekstrak teks dari Excel:", error);
+    throw new Error("Gagal mengekstrak teks dari file Excel.");
   }
 }
 
@@ -92,16 +98,16 @@ export async function extractTextFromExcel(file) {
  */
 export async function extractTextFromFile(file) {
   const fileName = file.name.toLowerCase();
-  
-  if (fileName.endsWith('.pdf')) {
+
+  if (fileName.endsWith(".pdf")) {
     return await extractTextFromPdf(file);
-  } else if (fileName.endsWith('.docx') || fileName.endsWith('.doc')) {
+  } else if (fileName.endsWith(".docx") || fileName.endsWith(".doc")) {
     return await extractTextFromDocx(file);
-  } else if (fileName.endsWith('.txt')) {
+  } else if (fileName.endsWith(".txt")) {
     return await extractTextFromTxt(file);
-  } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+  } else if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
     return await extractTextFromExcel(file);
   } else {
-    throw new Error('Format file tidak didukung.');
+    throw new Error("Format file tidak didukung.");
   }
-} 
+}

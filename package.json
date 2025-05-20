@@ -15,7 +15,7 @@
     "framer-motion": "^11.18.2",
     "groq-sdk": "^0.3.3",
     "mammoth": "^1.9.0",
-    "pdfjs-dist": "^4.10.38",
+    "pdfjs-dist": "^2.16.105",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",

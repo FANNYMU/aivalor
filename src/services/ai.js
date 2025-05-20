@@ -1,4 +1,4 @@
-import { Groq } from 'groq-sdk';
+import { Groq } from "groq-sdk";
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
@@ -71,23 +71,26 @@ export async function askQuestion(question, fileContent) {
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         {
-          role: 'system',
+          role: "system",
           content: systemPrompt,
         },
         {
-          role: 'user',
+          role: "user",
           content: userPrompt,
         },
       ],
-      model: 'llama-3.3-70b-versatile',
+      model: "llama-3.3-70b-versatile",
       temperature: 0.7,
       max_tokens: 2048,
       top_p: 0.9,
     });
 
-    return chatCompletion.choices[0]?.message?.content || 'Maaf, saya tidak dapat menjawab pertanyaan Anda.';
+    return (
+      chatCompletion.choices[0]?.message?.content ||
+      "Maaf, saya tidak dapat menjawab pertanyaan Anda."
+    );
   } catch (error) {
-    console.error('Error saat berkomunikasi dengan Groq API:', error);
-    throw new Error('Gagal mendapatkan respons dari AI. Silakan coba lagi.');
+    console.error("Error saat berkomunikasi dengan Groq API:", error);
+    throw new Error("Gagal mendapatkan respons dari AI. Silakan coba lagi.");
   }
-} 
+}

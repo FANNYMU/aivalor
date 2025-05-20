@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiClock, FiX } from 'react-icons/fi';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiClock, FiX } from "react-icons/fi";
 
 export default function Sidebar({ isOpen, onClose }) {
   const [history, setHistory] = useState([]);
@@ -9,9 +9,9 @@ export default function Sidebar({ isOpen, onClose }) {
   useEffect(() => {
     // Ini hanya contoh, nantinya bisa diambil dari localStorage atau API
     setHistory([
-      { id: 1, name: 'laporan-keuangan.pdf', date: '2023-09-15' },
-      { id: 2, name: 'data-mahasiswa.docx', date: '2023-09-10' },
-      { id: 3, name: 'notes.txt', date: '2023-09-05' }
+      { id: 1, name: "laporan-keuangan.pdf", date: "2023-09-15" },
+      { id: 2, name: "data-mahasiswa.docx", date: "2023-09-10" },
+      { id: 3, name: "notes.txt", date: "2023-09-05" },
     ]);
   }, []);
 
@@ -23,7 +23,7 @@ export default function Sidebar({ isOpen, onClose }) {
           initial={{ x: -300 }}
           animate={{ x: 0 }}
           exit={{ x: -300 }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           <div className="p-4 flex flex-col h-full">
             <div className="flex justify-between items-center mb-6">
@@ -69,4 +69,4 @@ export default function Sidebar({ isOpen, onClose }) {
       )}
     </AnimatePresence>
   );
-} 
+}

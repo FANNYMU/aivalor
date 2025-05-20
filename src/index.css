@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -180,9 +181,6 @@ body {
   background: var(--text-secondary);
 }
 
-/* Import font Arab */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap');
-
 /* Math Content Styles */
 .special-content.math {
   font-family: 'Cambria Math', 'Times New Roman', serif;
@@ -208,4 +206,58 @@ body {
 .special-content.math .operator {
   margin: 0 0.3em;
   color: #4B9FFF;
+}
+
+/* Styling untuk konten Arab */
+.arabic-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 1.5rem 0;
+}
+
+.arabic-text {
+  font-family: 'Noto Naskh Arabic', serif;
+  direction: rtl;
+  text-align: center;
+  font-size: 1.75rem;
+  line-height: 2.5;
+  color: var(--text-primary);
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  margin: 0;
+  display: inline-block;
+  min-width: 80%;
+  max-width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effect untuk teks Arab */
+.arabic-text:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.prose .arabic-text {
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+/* Styling untuk tag [arabic] */
+.prose p:has([arabic]) {
+  direction: rtl;
+  text-align: right;
+}
+
+[arabic] {
+  font-family: 'Noto Naskh Arabic', serif;
+  direction: rtl;
+  line-height: 2;
+  font-size: 1.5rem;
+  display: block;
+  margin: 1rem 0;
+  color: var(--text-primary);
 }

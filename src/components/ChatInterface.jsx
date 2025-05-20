@@ -1,14 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiSend, FiUser, FiCornerDownRight } from 'react-icons/fi';
-import ReactMarkdown from 'react-markdown';
-import { useChat } from '../context/ChatContext';
-import { useFile } from '../context/FileContext';
+import React, { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import { useChat } from "../context/ChatContext";
+import { useFile } from "../context/FileContext";
+import ArabicText from "./ArabicText";
+import { FiSend, FiUser } from "react-icons/fi";
 
 // Parser untuk teks Arab dengan format XML
 const parseArabicText = (content) => {
-  if (!content) return '';
-  
+  if (!content) return "";
+
   // Escape karakter khusus HTML untuk mencegah XSS kecuali markdown
   const escapeHtml = (text) => {
     return text
@@ -22,7 +23,8 @@ const parseArabicText = (content) => {
   // Parse teks Arab dengan regex yang aman
   return content.replace(
     /<arabic>(.*?)<\/arabic>/g,
-    (_, arabicText) => `<span class="arabic" dir="rtl">${escapeHtml(arabicText)}</span>`
+    (_, arabicText) =>
+      `<span class="arabic" dir="rtl">${escapeHtml(arabicText)}</span>`
   );
 };
 
@@ -33,20 +35,34 @@ const MarkdownRenderer = ({ children }) => {
     <ReactMarkdown
       components={{
         p: ({ children }) => <p className="mb-4">{children}</p>,
-        h1: ({ children }) => <h1 className="text-2xl font-bold mb-4">{children}</h1>,
-        h2: ({ children }) => <h2 className="text-xl font-bold mb-3">{children}</h2>,
-        h3: ({ children }) => <h3 className="text-lg font-bold mb-2">{children}</h3>,
-        ul: ({ children }) => <ul className="list-disc ml-6 mb-4">{children}</ul>,
-        ol: ({ children }) => <ol className="list-decimal ml-6 mb-4">{children}</ol>,
+        h1: ({ children }) => (
+          <h1 className="text-2xl font-bold mb-4">{children}</h1>
+        ),
+        h2: ({ children }) => (
+          <h2 className="text-xl font-bold mb-3">{children}</h2>
+        ),
+        h3: ({ children }) => (
+          <h3 className="text-lg font-bold mb-2">{children}</h3>
+        ),
+        ul: ({ children }) => (
+          <ul className="list-disc ml-6 mb-4">{children}</ul>
+        ),
+        ol: ({ children }) => (
+          <ol className="list-decimal ml-6 mb-4">{children}</ol>
+        ),
         li: ({ children }) => <li className="mb-1">{children}</li>,
         blockquote: ({ children }) => (
-          <blockquote className="border-l-4 border-blue-500 pl-4 italic my-4">{children}</blockquote>
+          <blockquote className="border-l-4 border-blue-500 pl-4 italic my-4">
+            {children}
+          </blockquote>
         ),
         code: ({ children }) => (
           <code className="bg-gray-800 rounded px-2 py-1">{children}</code>
         ),
         pre: ({ children }) => (
-          <pre className="bg-gray-800 rounded p-4 my-4 overflow-x-auto">{children}</pre>
+          <pre className="bg-gray-800 rounded p-4 my-4 overflow-x-auto">
+            {children}
+          </pre>
         ),
       }}
     >
@@ -67,7 +83,7 @@ const SpecialContent = ({ content, type }) => {
         const text = textRef.current;
         const containerWidth = container.offsetWidth;
         const textWidth = text.scrollWidth;
-        
+
         if (textWidth > containerWidth * 0.9) {
           const newScale = (containerWidth * 0.9) / textWidth;
           setScale(Math.max(newScale, 0.5));
@@ -78,76 +94,78 @@ const SpecialContent = ({ content, type }) => {
     };
 
     adjustTextSize();
-    window.addEventListener('resize', adjustTextSize);
-    return () => window.removeEventListener('resize', adjustTextSize);
+    window.addEventListener("resize", adjustTextSize);
+    return () => window.removeEventListener("resize", adjustTextSize);
   }, [content]);
 
   // Fungsi untuk memformat konten matematika
   const formatMathContent = (text) => {
-    return text
-      // Format pangkat
-      .replace(/\^(\d+)/g, '<sup>$1</sup>')
-      // Format perkalian
-      .replace(/(\d+|\))\s*x\s*(\d+|[a-zA-Z])/g, '$1 × $2')
-      // Format pembagian
-      .replace(/\//g, '÷')
-      // Format variabel dengan pangkat
-      .replace(/([a-zA-Z])(\d+)/g, '$1<sup>$2</sup>')
-      // Tambahkan spasi di sekitar operator
-      .replace(/([+\-×÷=])/g, ' $1 ')
-      // Format tanda kurung
-      .replace(/\(/g, '<span class="math-bracket">(</span>')
-      .replace(/\)/g, '<span class="math-bracket">)</span>');
+    return (
+      text
+        // Format pangkat
+        .replace(/\^(\d+)/g, "<sup>$1</sup>")
+        // Format perkalian
+        .replace(/(\d+|\))\s*x\s*(\d+|[a-zA-Z])/g, "$1 × $2")
+        // Format pembagian
+        .replace(/\//g, "÷")
+        // Format variabel dengan pangkat
+        .replace(/([a-zA-Z])(\d+)/g, "$1<sup>$2</sup>")
+        // Tambahkan spasi di sekitar operator
+        .replace(/([+\-×÷=])/g, " $1 ")
+        // Format tanda kurung
+        .replace(/\(/g, '<span class="math-bracket">(</span>')
+        .replace(/\)/g, '<span class="math-bracket">)</span>')
+    );
   };
 
   const getContentStyle = () => {
     const baseStyle = {
       transform: `scale(${scale})`,
-      transformOrigin: 'center center',
-      transition: 'transform 0.2s ease',
-      padding: '0.75rem 2rem',
-      borderRadius: '0.5rem',
-      display: 'inline-block',
-      minWidth: '60%',
-      maxWidth: '90%',
-      textAlign: 'center',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      backgroundColor: 'rgba(0,0,0,0.2)',
+      transformOrigin: "center center",
+      transition: "transform 0.2s ease",
+      padding: "0.75rem 2rem",
+      borderRadius: "0.5rem",
+      display: "inline-block",
+      minWidth: "60%",
+      maxWidth: "90%",
+      textAlign: "center",
+      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+      backgroundColor: "rgba(0,0,0,0.2)",
     };
 
     switch (type) {
-      case 'arabic':
+      case "arabic":
         return {
           ...baseStyle,
           fontFamily: "'Noto Naskh Arabic', serif",
-          direction: 'rtl',
-          fontSize: '1.75rem',
-          lineHeight: '2.5rem',
+          direction: "rtl",
+          fontSize: "1.75rem",
+          lineHeight: "2.5rem",
         };
-      case 'math':
+      case "math":
         return {
           ...baseStyle,
           fontFamily: "'Cambria Math', 'Times New Roman', serif",
-          fontSize: '1.5rem',
-          lineHeight: '2rem',
-          letterSpacing: '0.05em',
-          '& sup': {
-            fontSize: '0.75em',
-            position: 'relative',
-            top: '-0.5em',
+          fontSize: "1.5rem",
+          lineHeight: "2rem",
+          letterSpacing: "0.05em",
+          "& sup": {
+            fontSize: "0.75em",
+            position: "relative",
+            top: "-0.5em",
           },
-          '& .math-bracket': {
-            color: '#4B9FFF',
-            marginRight: '0.1em',
-            marginLeft: '0.1em',
+          "& .math-bracket": {
+            color: "#4B9FFF",
+            marginRight: "0.1em",
+            marginLeft: "0.1em",
           },
         };
-      case 'chemistry':
+      case "chemistry":
         return {
           ...baseStyle,
           fontFamily: "'Arial', sans-serif",
-          fontSize: '1.25rem',
-          lineHeight: '1.75rem',
+          fontSize: "1.25rem",
+          lineHeight: "1.75rem",
         };
       default:
         return baseStyle;
@@ -162,7 +180,7 @@ const SpecialContent = ({ content, type }) => {
           className={`special-content ${type}`}
           style={getContentStyle()}
           dangerouslySetInnerHTML={{
-            __html: type === 'math' ? formatMathContent(content) : content
+            __html: type === "math" ? formatMathContent(content) : content,
           }}
         />
       </div>
@@ -171,40 +189,83 @@ const SpecialContent = ({ content, type }) => {
 };
 
 const MarkdownWithSpecialContent = ({ content }) => {
+  // Fungsi untuk memproses teks Arab
+  const processArabicContent = (text) => {
+    const arabicRegex = /\[arabic\](.*?)\[\/arabic\]/gs;
+    return text.split(/(\[arabic\].*?\[\/arabic\])/gs).map((part, index) => {
+      if (part.match(arabicRegex)) {
+        const arabicText = part.replace(/\[arabic\](.*?)\[\/arabic\]/s, "$1");
+        return (
+          <div key={index} className="arabic-container my-4">
+            <div
+              className="arabic-text"
+              style={{
+                fontFamily: "'Noto Naskh Arabic', serif",
+                direction: "rtl",
+                fontSize: "1.75rem",
+                lineHeight: "2.5",
+                textAlign: "center",
+                padding: "1rem 2rem",
+                background: "var(--secondary-bg)",
+                borderRadius: "8px",
+                border: "1px solid var(--border-color)",
+                margin: "1rem 0",
+                display: "inline-block",
+                minWidth: "80%",
+              }}
+            >
+              {arabicText}
+            </div>
+          </div>
+        );
+      }
+      return part ? (
+        <ReactMarkdown
+          key={index}
+          components={{
+            p: ({ children }) => (
+              <p className="mb-4 leading-relaxed">{children}</p>
+            ),
+            h1: ({ children }) => (
+              <h1 className="text-2xl font-bold mb-4">{children}</h1>
+            ),
+            h2: ({ children }) => (
+              <h2 className="text-xl font-bold mb-3">{children}</h2>
+            ),
+            h3: ({ children }) => (
+              <h3 className="text-lg font-bold mb-2">{children}</h3>
+            ),
+            ul: ({ children }) => (
+              <ul className="list-disc ml-6 mb-4">{children}</ul>
+            ),
+            ol: ({ children }) => (
+              <ol className="list-decimal ml-6 mb-4">{children}</ol>
+            ),
+            li: ({ children }) => <li className="mb-2">{children}</li>,
+            blockquote: ({ children }) => (
+              <blockquote className="border-l-4 border-blue-500 pl-4 italic my-4">
+                {children}
+              </blockquote>
+            ),
+            code: ({ children }) => (
+              <code className="bg-gray-800 rounded px-2 py-1">{children}</code>
+            ),
+            pre: ({ children }) => (
+              <pre className="bg-gray-800 rounded p-4 my-4 overflow-x-auto">
+                {children}
+              </pre>
+            ),
+          }}
+        >
+          {part}
+        </ReactMarkdown>
+      ) : null;
+    });
+  };
+
   return (
     <div className="prose prose-invert max-w-none">
-      {content.split(/(\[(?:arabic|math|chemistry)\].*?\[\/(?:arabic|math|chemistry)\])/g).map((segment, index) => {
-        const specialContentMatch = segment.match(/\[(arabic|math|chemistry)\](.*?)\[\/\1\]/);
-        
-        if (specialContentMatch) {
-          const [, type, content] = specialContentMatch;
-          return <SpecialContent key={index} content={content} type={type} />;
-        }
-
-        // Untuk teks biasa
-        return (
-          <ReactMarkdown
-            key={index}
-            components={{
-              p: ({ children }) => <p className="mb-4 leading-relaxed">{children}</p>,
-              ul: ({ children }) => <ul className="list-disc ml-6 mb-4">{children}</ul>,
-              ol: ({ children }) => <ol className="list-decimal ml-6 mb-4">{children}</ol>,
-              li: ({ children }) => <li className="mb-2">{children}</li>,
-              blockquote: ({ children }) => (
-                <blockquote className="border-l-4 border-blue-500 pl-4 italic my-4">{children}</blockquote>
-              ),
-              code: ({ children }) => (
-                <code className="bg-gray-800 rounded px-2 py-1">{children}</code>
-              ),
-              pre: ({ children }) => (
-                <pre className="bg-gray-800 rounded p-4 my-4 overflow-x-auto">{children}</pre>
-              ),
-            }}
-          >
-            {segment}
-          </ReactMarkdown>
-        );
-      })}
+      {processArabicContent(content)}
     </div>
   );
 };
@@ -212,7 +273,7 @@ const MarkdownWithSpecialContent = ({ content }) => {
 const MarkdownWithArabic = ({ content }) => {
   // Pertama, kita pisahkan teks Arab dan non-Arab
   const segments = content.split(/((?:<arabic>.*?<\/arabic>))/g);
-  
+
   // Fungsi untuk memproses teks setelah Arab
   const processArabicFollowingText = (text) => {
     // Mencari pola (Transliterasi: ...) dan Artinya: "..."
@@ -221,26 +282,46 @@ const MarkdownWithArabic = ({ content }) => {
 
     if (transliterationMatch && meaningMatch) {
       return (
-        <div className="text-gray-300 text-center my-2" style={{ fontSize: '1rem' }}>
+        <div
+          className="text-gray-300 text-center my-2"
+          style={{ fontSize: "1rem" }}
+        >
           <div className="flex items-center justify-center">
-            <span className="text-blue-500" style={{ fontSize: '2rem', margin: '0 1rem', lineHeight: '1' }}>┃</span>
-            <span className="text-gray-200 px-4">{transliterationMatch[1]}</span>
-            <span className="text-blue-500" style={{ fontSize: '2rem', margin: '0 1rem', lineHeight: '1' }}>┃</span>
+            <span
+              className="text-blue-500"
+              style={{ fontSize: "2rem", margin: "0 1rem", lineHeight: "1" }}
+            >
+              ┃
+            </span>
+            <span className="text-gray-200 px-4">
+              {transliterationMatch[1]}
+            </span>
+            <span
+              className="text-blue-500"
+              style={{ fontSize: "2rem", margin: "0 1rem", lineHeight: "1" }}
+            >
+              ┃
+            </span>
             <span className="text-gray-200 px-4">{meaningMatch[1]}</span>
-            <span className="text-blue-500" style={{ fontSize: '2rem', margin: '0 1rem', lineHeight: '1' }}>┃</span>
+            <span
+              className="text-blue-500"
+              style={{ fontSize: "2rem", margin: "0 1rem", lineHeight: "1" }}
+            >
+              ┃
+            </span>
           </div>
         </div>
       );
     }
     return text;
   };
-  
+
   return (
     <div className="prose prose-invert max-w-none">
       {segments.map((segment, index) => {
-        if (segment.startsWith('<arabic>')) {
+        if (segment.startsWith("<arabic>")) {
           // Untuk teks Arab, kita ekstrak dan render dengan styling yang tepat
-          const arabicText = segment.replace(/<\/?arabic>/g, '');
+          const arabicText = segment.replace(/<\/?arabic>/g, "");
           return (
             <div key={index} className="my-4">
               <div className="text-center">
@@ -249,15 +330,15 @@ const MarkdownWithArabic = ({ content }) => {
                   style={{
                     fontFamily: "'Noto Naskh Arabic', serif",
                     fontSize: "1.75rem",
-                    direction: 'rtl',
-                    lineHeight: '2.5rem',
-                    padding: '0.75rem 2rem',
-                    backgroundColor: 'rgba(0,0,0,0.2)',
-                    borderRadius: '0.5rem',
-                    display: 'inline-block',
-                    minWidth: '60%',
-                    textAlign: 'center',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    direction: "rtl",
+                    lineHeight: "2.5rem",
+                    padding: "0.75rem 2rem",
+                    backgroundColor: "rgba(0,0,0,0.2)",
+                    borderRadius: "0.5rem",
+                    display: "inline-block",
+                    minWidth: "60%",
+                    textAlign: "center",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                   }}
                 >
                   {arabicText}
@@ -267,29 +348,54 @@ const MarkdownWithArabic = ({ content }) => {
           );
         } else {
           // Cek apakah ini adalah teks yang mengikuti Arabic
-          if (segment.includes('(Transliterasi:') && segment.includes('Artinya:')) {
-            return <React.Fragment key={index}>{processArabicFollowingText(segment)}</React.Fragment>;
+          if (
+            segment.includes("(Transliterasi:") &&
+            segment.includes("Artinya:")
+          ) {
+            return (
+              <React.Fragment key={index}>
+                {processArabicFollowingText(segment)}
+              </React.Fragment>
+            );
           }
           // Untuk teks non-Arab lainnya, gunakan ReactMarkdown
           return (
             <ReactMarkdown
               key={index}
               components={{
-                h1: ({ children }) => <h1 className="text-2xl font-bold mb-4">{children}</h1>,
-                h2: ({ children }) => <h2 className="text-xl font-bold mb-3">{children}</h2>,
-                h3: ({ children }) => <h3 className="text-lg font-bold mb-2">{children}</h3>,
-                p: ({ children }) => <p className="mb-4 leading-relaxed">{children}</p>,
-                ul: ({ children }) => <ul className="list-disc ml-6 mb-4">{children}</ul>,
-                ol: ({ children }) => <ol className="list-decimal ml-6 mb-4">{children}</ol>,
+                h1: ({ children }) => (
+                  <h1 className="text-2xl font-bold mb-4">{children}</h1>
+                ),
+                h2: ({ children }) => (
+                  <h2 className="text-xl font-bold mb-3">{children}</h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 className="text-lg font-bold mb-2">{children}</h3>
+                ),
+                p: ({ children }) => (
+                  <p className="mb-4 leading-relaxed">{children}</p>
+                ),
+                ul: ({ children }) => (
+                  <ul className="list-disc ml-6 mb-4">{children}</ul>
+                ),
+                ol: ({ children }) => (
+                  <ol className="list-decimal ml-6 mb-4">{children}</ol>
+                ),
                 li: ({ children }) => <li className="mb-2">{children}</li>,
                 blockquote: ({ children }) => (
-                  <blockquote className="border-l-4 border-blue-500 pl-4 italic my-4">{children}</blockquote>
+                  <blockquote className="border-l-4 border-blue-500 pl-4 italic my-4">
+                    {children}
+                  </blockquote>
                 ),
                 code: ({ children }) => (
-                  <code className="bg-gray-800 rounded px-2 py-1">{children}</code>
+                  <code className="bg-gray-800 rounded px-2 py-1">
+                    {children}
+                  </code>
                 ),
                 pre: ({ children }) => (
-                  <pre className="bg-gray-800 rounded p-4 my-4 overflow-x-auto">{children}</pre>
+                  <pre className="bg-gray-800 rounded p-4 my-4 overflow-x-auto">
+                    {children}
+                  </pre>
                 ),
               }}
             >
@@ -302,8 +408,27 @@ const MarkdownWithArabic = ({ content }) => {
   );
 };
 
+function MessageContent({ content }) {
+  // Fungsi untuk memisahkan teks Arab dan non-Arab
+  const splitContent = (text) => {
+    const parts = text.split(/(\[arabic\].*?\[\/arabic\])/gs);
+    return parts.map((part, index) => {
+      if (part.startsWith("[arabic]")) {
+        return <ArabicText key={index}>{part}</ArabicText>;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
+  return (
+    <div className="prose dark:prose-invert max-w-none">
+      {typeof content === "string" ? splitContent(content) : content}
+    </div>
+  );
+}
+
 export default function ChatInterface() {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const { messages, isLoading, sendQuestion } = useChat();
   const { fileContent, file } = useFile();
   const messagesEndRef = useRef(null);
@@ -313,7 +438,7 @@ export default function ChatInterface() {
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSubmit = async (e) => {
@@ -321,7 +446,7 @@ export default function ChatInterface() {
     if (!input.trim() || !fileContent) return;
 
     await sendQuestion(input.trim(), fileContent);
-    setInput('');
+    setInput("");
   };
 
   if (!file) {
@@ -342,7 +467,8 @@ export default function ChatInterface() {
               Silahkan ajukan pertanyaan
             </h2>
             <p className="text-gray-400 max-w-md">
-              AI akan menjawab pertanyaan Anda berdasarkan isi file yang telah diunggah
+              AI akan menjawab pertanyaan Anda berdasarkan isi file yang telah
+              diunggah
             </p>
           </motion.div>
         ) : (
@@ -351,7 +477,7 @@ export default function ChatInterface() {
               <motion.div
                 key={index}
                 className={`px-4 py-6 ${
-                  message.role === 'assistant' ? 'bg-[#1e1f2e]' : 'bg-[#1a1b26]'
+                  message.role === "assistant" ? "bg-[#1e1f2e]" : "bg-[#1a1b26]"
                 }`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -359,16 +485,16 @@ export default function ChatInterface() {
               >
                 <div className="max-w-3xl mx-auto flex gap-6">
                   <div className="flex-shrink-0 w-8 h-8">
-                    {message.role === 'user' ? (
+                    {message.role === "user" ? (
                       <div className="w-8 h-8 rounded-full bg-[#2d2d3b] flex items-center justify-center">
                         <FiUser className="w-5 h-5 text-[#a9b1d6]" />
                       </div>
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-[#7aa2f7] flex items-center justify-center">
-                        <svg 
-                          viewBox="0 0 24 24" 
+                        <svg
+                          viewBox="0 0 24 24"
                           className="w-5 h-5 text-white"
-                          fill="none" 
+                          fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
@@ -399,14 +525,16 @@ export default function ChatInterface() {
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="text-[#a9b1d6] font-medium">
-                        {message.role === 'user' ? 'Anda' : 'AI'}
+                        {message.role === "user" ? "Anda" : "AI"}
                       </span>
                     </div>
                     <div className="prose prose-invert max-w-none">
-                      {message.role === 'assistant' ? (
+                      {message.role === "assistant" ? (
                         <MarkdownWithSpecialContent content={message.content} />
                       ) : (
-                        <p className="text-[#a9b1d6] leading-7">{message.content}</p>
+                        <p className="text-[#a9b1d6] leading-7">
+                          {message.content}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -447,4 +575,4 @@ export default function ChatInterface() {
       </div>
     </div>
   );
-} 
+}
